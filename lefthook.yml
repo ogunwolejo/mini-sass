@@ -1,0 +1,18 @@
+pre-commit:
+  parallel: true
+  cache: true
+  commands:
+    lint:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: |
+        echo "🔍 Running ESLint on staged files..." 
+        pnpm lint {staged_files}
+    typecheck:
+      glob: "*.{js,ts,jsx,tsx}"
+      run: |
+        echo "🧠 Running TypeScript type check..." 
+        yarn typecheck
+    test:
+      run: |
+        echo "🧪 Running tests with coverage..."
+        yarn test:ci
