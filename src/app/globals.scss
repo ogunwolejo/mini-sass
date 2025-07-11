@@ -1,12 +1,13 @@
 @use "tailwindcss";
-@import "fonts";
+@use "fonts";
 
 :root {
   --white: #ffffff;
-  --background: #F8F9FA;
+  --background: #f8f9fa;
   --foreground: #171717;
-  --teal: #4FD1C5;
-  --gray700: #2D3748;
+  --teal: #4fd1c5;
+  --gray700: #2d3748;
+  --white-shade1: #c4c4c4;
 }
 
 @theme inline {
@@ -15,6 +16,7 @@
   --color-white: var(--white);
   --color-teal: var(--teal);
   --color-gray700: var(--gray700);
+  --color-white-shade1: var(--white-shade1);
 
   --font-helvetica: var(--font-helvetica);
 }

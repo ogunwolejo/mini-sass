@@ -1,42 +1,47 @@
 @font-face {
-  font-family: 'Helvetica';
+  font-family: "Helvetica";
   font-weight: 400;
-  src: local('Helvetica'),
-    url('/fonts/Helvetica.woff') format('woff');
+  src:
+    local("Helvetica"),
+    url("/fonts/Helvetica.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Helvetica';
-  font-weight: 700; 
-  src: local('Helvetica'),
-    url('/fonts/Helvetica-Bold.woff') format('woff');
+  font-family: "Helvetica";
+  font-weight: 700;
+  src:
+    local("Helvetica"),
+    url("/fonts/Helvetica-Bold.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Helvetica Oblique';
+  font-family: "Helvetica Oblique";
   font-style: italic;
-  src: local('Helvetica Oblique'),
-    url('/fonts/Helvetica-Oblique.woff') format('woff');
-}
-
-
-@font-face {
-  font-family: 'Helvetica Rounded Bold';
-  src: local('Helvetica Rounded Bold'),
-    url('/fonts/helvetica-rounded-bold.woff') format('woff');
+  src:
+    local("Helvetica Oblique"),
+    url("/fonts/Helvetica-Oblique.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Helvetica Bold Oblique';
+  font-family: "Helvetica Rounded Bold";
+  src:
+    local("Helvetica Rounded Bold"),
+    url("/fonts/helvetica-rounded-bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "Helvetica Bold Oblique";
   font-style: italic;
   font-weight: 700;
-  src: local('Helvetica Bold Oblique'),
-    url('/fonts/Helvetica-BoldOblique.woff') format('woff');
+  src:
+    local("Helvetica Bold Oblique"),
+    url("/fonts/Helvetica-BoldOblique.woff") format("woff");
 }
 
 @font-face {
-  font-family: 'Helvetica Light';
+  font-family: "Helvetica Light";
   font-weight: 300;
-  src: local('Helvetica Light'),
-    url('/fonts/helvetica-light.woff') format('woff');
+  src:
+    local("Helvetica Light"),
+    url("/fonts/helvetica-light.woff") format("woff");
 }
