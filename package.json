@@ -2,24 +2,16 @@
   "name": "mini-sass",
   "version": "0.1.0",
   "private": true,
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "eslint --fix --max-warnings=0",
-      "prettier --write --config .prettierrc.json"
-    ],
-    "**/*.{json,css,scss,md,html,yml}": [
-      "prettier --write --config .prettierrc.json"
-    ]
-  },
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "format": "pnpm exec prettier . --write",
-    "prepare": "husky"
+    "format": "prettier . --write",
+    "prepare": "pnpm run format && pnpm run lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.24.0",
     "next": "15.3.5",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -33,8 +25,6 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.5",
     "eslint-config-prettier": "^10.1.5",
-    "husky": "^9.1.7",
-    "lint-staged": "^16.1.2",
     "prettier": "^3.6.2",
     "sass": "^1.89.2",
     "tailwindcss": "^4",

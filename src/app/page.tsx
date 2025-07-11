@@ -20,7 +20,7 @@ export default function Home() {
             </code>
             .
           </li>
-          <li className="tracking-[-.01em]">
+          <li className="tracking-[-.01em] font-helvetica font-semibold">
             Save and see your changes.
           </li>
         </ol>

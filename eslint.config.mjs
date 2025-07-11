@@ -1,7 +1,6 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-import eslintConfigPrettier from "eslint-config-prettier/flat";
+import {FlatCompat} from "@eslint/eslintrc";
+import {dirname} from "path";
+import {fileURLToPath} from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,8 +17,9 @@ const customRules = {
     "prefer-const": "warn",
     "import/no-anonymous-default-export": "warn",
     "@typescript-eslint/no-explicit-any": "off",
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
+    quotes: ["error", "double"],
+    semi: ["error", "always"],
+    "react/jsx-curly-spacing": ["error", "never"],
     "import/order": [
       "error",
       {
@@ -29,17 +29,17 @@ const customRules = {
           "internal",
           "parent",
           "sibling",
-          "index"
+          "index",
         ],
-        "newlines-between": "always"
-      }
-    ]
+        "newlines-between": "always",
+      },
+    ],
   },
 };
 
 const eslintConfig = [
-  ...compat.extends("next/core-web-vitals", "next/typescript", eslintConfigPrettier),
-    customRules,
+  ...compat.extends("next/core-web-vitals", "next/typescript", "prettier"),
+  customRules,
   {
     ignores: [
       "**/node_modules/*",
@@ -50,8 +50,8 @@ const eslintConfig = [
       "**/__mocks__/*",
       "**/__tests__/*",
       "**/*.d.ts",
-    ]
-  }
+    ],
+  },
 ];
 
 export default eslintConfig;

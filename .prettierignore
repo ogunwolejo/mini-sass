@@ -3,3 +3,5 @@
 /.hg
 /node_modules
 /out/
+.prettierrc
+eslint.config.mjs
