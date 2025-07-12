@@ -1,46 +1,40 @@
-import {clerkMiddleware} from "@clerk/nextjs/server";
-import type {NextRequest} from "next/server";
+import {clerkMiddleware, createRouteMatcher} from "@clerk/nextjs/server";
 import {NextResponse} from "next/server";
 
-//const protectedRoutes = ["/dashboard"];
+// Define public routes (no authentication needed)
+const isPublicRoute = createRouteMatcher([
+  "/", // Home page
+  "/auth(.*)", // All auth routes and subpaths
+  "/api/webhook(.*)", // Clerk webhook
+  // Add other public routes here
+]);
 
-export async function middleware(request: NextRequest) {
-  const pathname = request.nextUrl.pathname;
-
-  // Skip for static files and API routes
-  if (pathname.startsWith("/_next") || pathname.startsWith("/api")) {
+export default clerkMiddleware(async (auth, request) => {
+  if (request.nextUrl.pathname.startsWith("/_next")) {
     return NextResponse.next();
   }
 
-  //const session = request.cookies.get("session")?.value;
-  //const credential = session ? await decrypt(session) : null;
-  //const isAuthenticated = !!credential;
+  if (isPublicRoute(request)) {
+    return NextResponse.next();
+  }
 
-  // Handle root path redirect
-  // if (pathname === "/") {
-  //   return NextResponse.redirect(new URL(isAuthenticated ? "/dashboard" : "/login", request.url));
-  // }
+  // Protect dashboard routes
+  if (request.nextUrl.pathname.startsWith("/dashboard")) {
+    return await auth.protect({
+      // Customize the redirect URL if needed (default is Clerk's sign-in)
+      redirectUrl: "/auth/sign-in",
+      // Optional: Return to original page after sign-in
+      returnBackUrl: request.url,
+    });
+  }
 
-  // Redirect to login if trying to access protected route without auth
-  // if (protectedRoutes.some((route) => pathname.startsWith(route))) {
-  //   if (!isAuthenticated) {
-  //     return NextResponse.redirect(new URL("/login", request.url));
-  //   }
-
-  //   const headers = new Headers(request.headers);
-  //   headers.set("x-middleware-validated", "true");
-  //   return NextResponse.next({headers});
-  // }
-
+  // Default behavior for other routes
   return NextResponse.next();
-}
+});
 
-export default clerkMiddleware();
 export const config = {
   matcher: [
-    // Skip Next.js internals and all static files, unless found in search params
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
-    // Always run for API routes
     "/(api|trpc)(.*)",
   ],
 };

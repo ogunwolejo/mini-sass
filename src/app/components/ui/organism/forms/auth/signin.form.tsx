@@ -15,6 +15,12 @@ import {FaLinkedinIn} from "react-icons/fa";
 import {HiOutlineEye, HiOutlineEyeSlash} from "react-icons/hi2";
 import {emailSchema, passwordSchema} from "@/lib/zod.schema";
 import {ErrorMessage} from "@/app/components/ui/atoms/error.message";
+import {useSignIn} from "@clerk/nextjs";
+import {useRouter} from "next/navigation";
+import {CLERK_ERROR_MSG} from "@/lib/clerk.utils";
+import ShowLoader from "@/app/components/ui/atoms/showLoader";
+import {error} from "next/dist/build/output/log";
+import {OAuthStrategy} from "@clerk/types";
 
 const schema = z.object({
   email: emailSchema,
@@ -22,9 +28,13 @@ const schema = z.object({
 });
 export const SignInForm = memo(() => {
   const [securePassword, setSecurePassword] = useState<boolean>(false);
+  const {isLoaded, signIn, setActive} = useSignIn();
+  const router = useRouter();
+  const [processing, setProcessing] = useState<boolean>(false);
   const {
     register,
     handleSubmit,
+    setError,
     formState: {errors},
   } = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
@@ -37,11 +47,85 @@ export const SignInForm = memo(() => {
   const handleTogglePasswordSecurity = () => {
     setSecurePassword((cur) => !cur);
   };
-  const handleOnSubmit = (data: z.infer<typeof schema>) => {
-    console.log("result: ", data);
+  const handleOnSubmit = async (data: z.infer<typeof schema>) => {
+    if (!isLoaded) {
+      setError("root", {
+        message: CLERK_ERROR_MSG,
+      });
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      if (!signIn) {
+        setError("root", {
+          message: CLERK_ERROR_MSG,
+        });
+        return;
+      }
+
+      const {email, password} = data;
+      const attemptSignIn = await signIn.create({
+        password,
+        identifier: email,
+      });
+
+      if (attemptSignIn.status === "complete") {
+        await setActive({session: attemptSignIn.createdSessionId});
+        router.replace("/dashboard");
+      } else {
+        throw new Error(
+          "Authentication failed. Please check your credentials.",
+        );
+      }
+    } catch (e: unknown) {
+      setError("root", {
+        message: e.message || "An unexpected error occurred.",
+      });
+    } finally {
+      setProcessing(false);
+    }
   };
 
-  const handleSocialAuthSignIn = (socialType: string) => {};
+  const handleSocialAuthSignIn = async(strategy: OAuthStrategy) => {
+    if (!isLoaded) {
+      setError("root", {
+        message: CLERK_ERROR_MSG,
+      });
+      return;
+    }
+
+    try {
+      setProcessing(true);
+      if (!signIn) {
+        setError("root", {
+          message: CLERK_ERROR_MSG,
+        });
+        return;
+      }
+
+      await signIn.authenticateWithRedirect({
+        strategy,
+        continueSignUp: true,
+        redirectUrlComplete: window.location.origin,
+        redirectUrl: `${window.location.origin}/dashboard`,
+      });
+    } catch (err: unknown) {
+      let errorMessage = "Try again later, serve down";
+      if (err instanceof Error) {
+        errorMessage = err.message;
+      } else if (typeof err === "object" && err !== null && "errors" in err) {
+        const clerkError = err as {
+          errors: Array<{code: string; message: string}>;
+        };
+        errorMessage = clerkError.errors[0]?.message || errorMessage;
+      }
+
+      setError("root", {message: errorMessage});
+    } finally {
+      setProcessing(false);
+    }
+  };
 
   return (
     <div id="sign_in_form_container" className="bg-transparent">
@@ -74,7 +158,9 @@ export const SignInForm = memo(() => {
               placeholder="Your email address"
               {...register("email")}
             />
-            {(errors.email && errors.email.message) && <ErrorMessage message={errors.email.message} />}
+            {errors.email && errors.email.message && (
+              <ErrorMessage message={errors.email.message} />
+            )}
           </div>
           <div
             id="password_container"
@@ -101,15 +187,19 @@ export const SignInForm = memo(() => {
                 />
               }
             />
-            {(errors.password && errors.password.message) && <ErrorMessage message={errors.password.message} />}
+            {errors.password && errors.password.message && (
+              <ErrorMessage message={errors.password.message} />
+            )}
           </div>
 
           <Button
+            disabled={processing}
             id="submit_btn"
             type="submit"
-            className="text-white text-xs bg-teal uppercase w-full h-[45px] rounded-xl cursor-pointer"
+            className="text-white text-xs bg-teal uppercase w-full h-[45px] rounded-xl cursor-pointer gap-3"
           >
             Sign in
+            <ShowLoader canShow={processing} size="sm" color="text-white" />
           </Button>
 
           <p className="text-center text-sm font-helvetica font-light w-full">
@@ -126,15 +216,19 @@ export const SignInForm = memo(() => {
             className="grid grid-cols-3 gap-3 mx-auto w-[50%]"
           >
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FcGoogle />} />
+              <IconButton type="button" icon={<FcGoogle />} onClick={handleSocialAuthSignIn.bind(null, "oauth_google")} />
             </div>
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FaFacebookF />} />
+              <IconButton type="button" icon={<FaFacebookF />} onClick={handleSocialAuthSignIn.bind(null, "oauth_facebook")} />
             </div>
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FaLinkedinIn />} />
+              <IconButton type="button" icon={<FaLinkedinIn />} onClick={handleSocialAuthSignIn.bind(null, "oauth_linkedin")} />
             </div>
           </div>
+
+          {errors.root && errors.root.message && (
+              <ErrorMessage message={errors.root.message} />
+          )}
         </form>
       </div>
     </div>
