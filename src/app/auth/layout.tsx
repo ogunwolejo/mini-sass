@@ -1,7 +1,8 @@
-import Footer from "@/app/components/ui/atoms/footer";
 import {ReactNode} from "react";
 
-export default function AuthLayout({
+import Footer from "@/app/components/ui/atoms/footer";
+
+export default async function AuthLayout({
   children,
 }: Readonly<{children: ReactNode}>) {
   return (

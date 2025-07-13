@@ -1,34 +1,41 @@
 import {clerkMiddleware, createRouteMatcher} from "@clerk/nextjs/server";
 import {NextResponse} from "next/server";
 
-// Define public routes (no authentication needed)
-const isPublicRoute = createRouteMatcher([
-  "/", // Home page
-  "/auth(.*)", // All auth routes and subpaths
-  "/api/webhook(.*)", // Clerk webhook
-  // Add other public routes here
-]);
+const isAuthRoute = createRouteMatcher(["/auth(.*)"]);
+const isDashboardRoute = createRouteMatcher(["/dashboard(.*)"]);
+const isStaticAsset = (pathname: string) =>
+  pathname.startsWith("/_next") || pathname.includes(".");
 
 export default clerkMiddleware(async (auth, request) => {
-  if (request.nextUrl.pathname.startsWith("/_next")) {
+  const {isAuthenticated} = await auth();
+  const {pathname} = request.nextUrl;
+
+  if (isStaticAsset(pathname)) {
     return NextResponse.next();
   }
 
-  if (isPublicRoute(request)) {
+  if (!isAuthenticated) {
+    if (!isAuthRoute(request)) {
+      const signInUrl = new URL("/auth/signin", request.url);
+      signInUrl.searchParams.set("redirect_url", pathname);
+      return NextResponse.redirect(signInUrl);
+    }
+
+    return NextResponse.next(); // Allow access to /auth/*
+  }
+
+  if (isAuthenticated) {
+    if (isAuthRoute(request)) {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
+    if (pathname === "/") {
+      return NextResponse.redirect(new URL("/dashboard", request.url));
+    }
+
     return NextResponse.next();
   }
 
-  // Protect dashboard routes
-  if (request.nextUrl.pathname.startsWith("/dashboard")) {
-    return await auth.protect({
-      // Customize the redirect URL if needed (default is Clerk's sign-in)
-      redirectUrl: "/auth/sign-in",
-      // Optional: Return to original page after sign-in
-      returnBackUrl: request.url,
-    });
-  }
-
-  // Default behavior for other routes
   return NextResponse.next();
 });
 

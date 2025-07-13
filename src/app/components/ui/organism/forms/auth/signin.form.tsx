@@ -87,7 +87,7 @@ export const SignInForm = memo(() => {
     }
   };
 
-  const handleSocialAuthSignIn = async(strategy: OAuthStrategy) => {
+  const handleSocialAuthSignIn = async (strategy: OAuthStrategy) => {
     if (!isLoaded) {
       setError("root", {
         message: CLERK_ERROR_MSG,
@@ -216,18 +216,30 @@ export const SignInForm = memo(() => {
             className="grid grid-cols-3 gap-3 mx-auto w-[50%]"
           >
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FcGoogle />} onClick={handleSocialAuthSignIn.bind(null, "oauth_google")} />
+              <IconButton
+                type="button"
+                icon={<FcGoogle />}
+                onClick={handleSocialAuthSignIn.bind(null, "oauth_google")}
+              />
             </div>
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FaFacebookF />} onClick={handleSocialAuthSignIn.bind(null, "oauth_facebook")} />
+              <IconButton
+                type="button"
+                icon={<FaFacebookF />}
+                onClick={handleSocialAuthSignIn.bind(null, "oauth_facebook")}
+              />
             </div>
             <div className="inline-flex justify-center item-center border size-12 rounded-full border-teal">
-              <IconButton type="button" icon={<FaLinkedinIn />} onClick={handleSocialAuthSignIn.bind(null, "oauth_linkedin")} />
+              <IconButton
+                type="button"
+                icon={<FaLinkedinIn />}
+                onClick={handleSocialAuthSignIn.bind(null, "oauth_linkedin")}
+              />
             </div>
           </div>
 
           {errors.root && errors.root.message && (
-              <ErrorMessage message={errors.root.message} />
+            <ErrorMessage message={errors.root.message} />
           )}
         </form>
       </div>

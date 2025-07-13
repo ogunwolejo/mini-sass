@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import {ClerkProvider} from "@clerk/nextjs";
 import "./globals.scss";
 import localFont from "next/font/local";
+import {AppUIContextProvider} from "@/context/app.settings";
 
 const Helvetical = localFont({
   src: [
@@ -51,10 +52,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={`${Helvetical.variable} antialiased`}>{children}</body>
-      </html>
-    </ClerkProvider>
+    <AppUIContextProvider>
+      <ClerkProvider>
+        <html lang="en">
+          <body className={`${Helvetical.variable} antialiased`}>
+            {children}
+          </body>
+        </html>
+      </ClerkProvider>
+    </AppUIContextProvider>
   );
 }

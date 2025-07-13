@@ -1,0 +1,17 @@
+.loader-bar {
+  //@apply w-full h-full ;
+  animation: sweep 2s ease-in-out infinite;
+  transform-origin: left center;
+}
+
+@keyframes sweep {
+  0% {
+    transform: scaleX(0);
+  }
+  50% {
+    transform: scaleX(1);
+  }
+  100% {
+    transform: scaleX(0);
+  }
+}
